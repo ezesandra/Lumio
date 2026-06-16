@@ -1,0 +1,100 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.questionCard {
+  margin-bottom: var(--spacing-6);
+}
+
+.questionText {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-4);
+  color: var(--color-text-primary);
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.option {
+  padding: var(--spacing-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+}
+
+.option:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+  border-color: var(--color-brand);
+}
+
+.selected {
+  border-color: var(--color-brand);
+  background: var(--color-brand-subtle);
+}
+
+.correct {
+  border-color: var(--color-success);
+  background: hsl(142, 71%, 95%);
+  color: hsl(142, 71%, 30%);
+}
+
+.incorrect {
+  border-color: var(--color-error);
+  background: var(--color-error-container);
+  color: var(--color-on-error-container);
+}
+
+.feedback {
+  margin-top: var(--spacing-6);
+  padding: var(--spacing-4);
+  border-radius: var(--radius-md);
+}
+
+.feedback.correct {
+  background: hsl(142, 71%, 95%);
+  border: 1px solid var(--color-success);
+}
+
+.feedback.incorrect {
+  background: var(--color-error-container);
+  border: 1px solid var(--color-error);
+}
+
+.feedbackText {
+  font-weight: 500;
+  margin-bottom: var(--spacing-2);
+}
+
+.explanation {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--spacing-6);
+}
+
+.completed {
+  text-align: center;
+  padding: var(--spacing-8) 0;
+}
+
+.score {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  color: var(--color-brand);
+  margin-bottom: var(--spacing-4);
+}

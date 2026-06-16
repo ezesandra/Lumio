@@ -1,0 +1,96 @@
+.button {
+  font-family: var(--font-family-base);
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px solid transparent;
+  outline: none;
+  gap: var(--spacing-2);
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.button:focus-visible {
+  box-shadow: 0 0 0 3px var(--color-border-focus);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Variants */
+.primary {
+  background: linear-gradient(135deg, var(--color-brand), hsl(256, 44%, 45%));
+  color: var(--color-text-inverse);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+.primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+}
+.primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(139, 92, 246, 0.3);
+}
+
+.secondary {
+  background: var(--color-surface-elevated);
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
+}
+.secondary:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+  border-color: var(--color-outline);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+.secondary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+}
+.ghost:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.danger {
+  background: var(--color-error);
+  color: var(--color-text-inverse);
+}
+.danger:hover:not(:disabled) {
+  background: hsl(358, 68%, 38%);
+  transform: translateY(-1px);
+}
+
+/* Sizes */
+.sm {
+  height: 32px;
+  padding: 0 var(--spacing-3);
+  font-size: var(--font-size-sm);
+}
+.md {
+  height: 40px;
+  padding: 0 var(--spacing-5);
+  font-size: var(--font-size-base);
+}
+.lg {
+  height: 48px;
+  padding: 0 var(--spacing-7);
+  font-size: var(--font-size-md);
+}
+
+.iconOnly {
+  padding: 0;
+  width: 40px;
+  height: 40px;
+}
