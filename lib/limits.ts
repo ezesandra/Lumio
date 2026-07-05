@@ -1,11 +1,11 @@
 export const LIMITS = {
   FREE: {
     maxFileSizeBytes:        300 * 1024 * 1024,  // 300MB
-    practiceTestsPerMonth:      1,
-    questionsPerTest:          40,
+    practiceTestsPerMonth:      3,
+    questionsPerTest:          5,
     aiSummary:                 "basic",
     simplifiedExplanations:    false,
-    youtubeRecommendations:     false,
+    youtubeRecommendations:     true,
     advancedAnalytics:         false,
     gamification:              false,
     studyReminders:            false,

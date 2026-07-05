@@ -3,6 +3,7 @@
 import { z } from "zod";
 import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
+import { sendWelcomeEmail } from "@/lib/email";
 
 const signupSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -36,6 +37,8 @@ export async function signupAction(formData: FormData) {
         emailVerified: new Date(),
       },
     });
+
+    await sendWelcomeEmail(email, name);
 
     return { success: true, email, password };
   } catch (error) {

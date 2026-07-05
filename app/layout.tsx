@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { Navbar } from "@/components/layout/Navbar";
 import { SidebarOffset } from "@/components/layout/SidebarOffset";
+import { SidebarProvider } from "@/components/layout/SidebarContext";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const bricolage = Bricolage_Grotesque({
@@ -26,10 +27,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${bricolage.variable}`}>
         <AuthProvider>
-          <Navbar />
-          <SidebarOffset>
-            {children}
-          </SidebarOffset>
+          <SidebarProvider>
+              <Navbar />
+              <SidebarOffset>
+                {children}
+              </SidebarOffset>
+            </SidebarProvider>
         </AuthProvider>
         <script src="https://checkout.flutterwave.com/v3.js" async></script>
       </body>

@@ -5,8 +5,9 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { BookOpenText, MessageCircleCode, Video, Sparkles, Lock } from "lucide-react";
-
+import { BookOpenText, MessageCircleCode, Video, Sparkles, Lock, AlertCircle } from "lucide-react";
+import { AutoRefresh } from "../AutoRefresh";
+import { LIMITS, type TierKey } from "@/lib/limits";
 export default async function SummaryPage({ params }: { params: Promise<{ documentId: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/login");
@@ -18,7 +19,7 @@ export default async function SummaryPage({ params }: { params: Promise<{ docume
     include: { studyContent: true }
   });
 
-  if (!document || document.userId !== session.user.id) redirect("/dashboard");
+  if (!document || document.userId !== session.user.id) redirect("/library");
 
   if (document.status === "PROCESSING") {
     return (
@@ -30,6 +31,24 @@ export default async function SummaryPage({ params }: { params: Promise<{ docume
         <p style={{ color: "var(--color-text-secondary)", maxWidth: 400, margin: "0 auto" }}>
           Our AI is currently analyzing your document and generating study materials. This usually takes a few moments.
         </p>
+        <AutoRefresh documentId={documentId} />
+      </div>
+    );
+  }
+
+  if (document.status === "FAILED") {
+    return (
+      <div style={{ textAlign: "center", padding: "var(--spacing-16) 0" }}>
+        <div style={{ width: 64, height: 64, margin: "0 auto var(--spacing-4)", borderRadius: "var(--radius-full)", background: "rgba(229,62,62,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <AlertCircle size={28} style={{ color: "var(--color-error)" }} />
+        </div>
+        <h1 style={{ fontFamily: "var(--font-family-display)", fontSize: "var(--font-size-xl)", marginBottom: "var(--spacing-2)" }}>Processing failed</h1>
+        <p style={{ color: "var(--color-text-secondary)", maxWidth: 500, margin: "0 auto var(--spacing-6)" }}>
+          Unfortunately, we couldn't generate study materials for your document.
+        </p>
+        <div style={{ color: "var(--color-error)", fontSize: "var(--font-size-sm)", padding: "12px 16px", background: "rgba(229,62,62,0.1)", borderRadius: "var(--radius-md)", display: "inline-block", maxWidth: 600, textAlign: "left", whiteSpace: "pre-wrap" }}>
+          <strong>Error Details:</strong> {document.failureReason || "Unknown error"}
+        </div>
       </div>
     );
   }
@@ -44,8 +63,8 @@ export default async function SummaryPage({ params }: { params: Promise<{ docume
     );
   }
 
-  const tier = session.user.subscriptionTier;
-  const canSeeYouTube = tier === "STANDARD" || tier === "PREMIUM";
+  const tier = session.user.subscriptionTier as TierKey;
+  const canSeeYouTube = LIMITS[tier]?.youtubeRecommendations;
   const youtubeLinks = content.youtubeLinks as any[];
 
   const sectionStyle = {
@@ -102,57 +121,6 @@ export default async function SummaryPage({ params }: { params: Promise<{ docume
         </section>
       )}
 
-      <section style={sectionStyle}>
-        <div style={headingRow}>
-          <div style={{ ...iconBox, background: "hsla(0, 0%, 0%, 0.04)", color: "var(--color-text-secondary)" }}>
-            <Video size={20} />
-          </div>
-          <h2 style={{ fontFamily: "var(--font-family-display)", fontSize: "var(--font-size-lg)", color: "var(--color-text-primary)", margin: 0 }}>Recommended Videos</h2>
-        </div>
-        {canSeeYouTube ? (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "var(--spacing-4)" }}>
-            {youtubeLinks?.map((vid, idx) => (
-              <Card key={idx} style={{ display: "flex", alignItems: "center", gap: "var(--spacing-4)", padding: "var(--spacing-4)" }}>
-                <img
-                  src={vid.thumbnailUrl}
-                  alt={vid.title}
-                  style={{
-                    width: 140,
-                    height: 80,
-                    borderRadius: "var(--radius-md)",
-                    objectFit: "cover",
-                    flexShrink: 0,
-                  }}
-                />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <h3 style={{ fontSize: "var(--font-size-base)", fontWeight: 600, marginBottom: "var(--spacing-1)", color: "var(--color-text-primary)" }}>
-                    {vid.title}
-                  </h3>
-                  <p style={{ fontSize: "var(--font-size-sm)", color: "var(--color-text-secondary)", marginBottom: "var(--spacing-2)" }}>
-                    {vid.channelName}
-                  </p>
-                  <a href={vid.url} target="_blank" rel="noopener noreferrer">
-                    <Button variant="secondary" size="sm">Watch Video</Button>
-                  </a>
-                </div>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <Card style={{ textAlign: "center", padding: "var(--spacing-8)" }}>
-            <div style={{ width: 48, height: 48, margin: "0 auto var(--spacing-3)", borderRadius: "var(--radius-full)", background: "var(--color-surface-hover)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--color-text-secondary)" }}>
-              <Lock size={22} />
-            </div>
-            <p style={{ marginBottom: "var(--spacing-1)", fontWeight: 600, color: "var(--color-text-primary)" }}>
-              Unlock Video Recommendations
-            </p>
-            <p style={{ fontSize: "var(--font-size-sm)", color: "var(--color-text-secondary)", marginBottom: "var(--spacing-4)", maxWidth: 320, margin: "0 auto var(--spacing-4)" }}>
-              Upgrade your plan to get AI-curated video recommendations tailored to your study material.
-            </p>
-            <Button variant="primary">Upgrade Plan</Button>
-          </Card>
-        )}
-      </section>
     </div>
   );
 }

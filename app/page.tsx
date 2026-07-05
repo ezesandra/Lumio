@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Aurora } from "@/components/effects/Aurora";
+import { PricingTable } from "@/components/subscription/PricingTable";
 
 import styles from "./page.module.css";
 
@@ -10,7 +11,7 @@ const features = [
   { icon: "📄", title: "Smart Summaries", desc: "Upload any document and get concise AI-powered summaries that capture the key points in seconds." },
   { icon: "🃏", title: "Flashcard Generator", desc: "Turn your study material into interactive flashcards. Review anytime, anywhere." },
   { icon: "🧠", title: "Adaptive Quizzes", desc: "Test your knowledge with AI-generated quizzes that adapt to your progress." },
-  { icon: "📊", title: "Progress Tracking", desc: "Monitor your learning journey with XP points, streaks, and detailed analytics." },
+  { icon: "📊", title: "Progress Tracking", desc: "Monitor your learning journey with streaks and detailed analytics." },
   { icon: "🤖", title: "AI Chat", desc: "Ask questions about your material and get instant answers from your personal AI tutor." },
   { icon: "📱", title: "Study Anywhere", desc: "Access your materials across all your devices. Study whenever inspiration strikes." },
 ];
@@ -21,24 +22,6 @@ const steps = [
   { title: "Start Studying", desc: "Dive into summaries, flashcards, and quizzes optimized for your brain." },
 ];
 
-const plans = [
-  {
-    name: "Starter",
-    price: "Free",
-    desc: "Perfect for trying out AI-powered studying.",
-    features: ["3 uploads per month", "Basic summaries", "Flashcard generation", "Community access"],
-    featured: false,
-  },
-  {
-    name: "Pro",
-    price: "₦5,000",
-    period: "/month",
-    desc: "For serious learners who want to maximize their potential.",
-    features: ["Unlimited uploads", "Advanced summaries", "Unlimited flashcards", "Adaptive quizzes", "AI chat tutor", "Progress analytics"],
-    featured: true,
-  },
-
-];
 
 const faqs = [
   { q: "How does Lumio process my documents?", a: "Lumio uses advanced AI to analyze your uploaded materials, extracting key concepts and organizing them into structured summaries, flashcards, and quiz questions. Your data is encrypted and never shared." },
@@ -150,45 +133,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="pricing" className={styles.section}>
-        <div className={styles.sectionLabel}>
-          <span>💰</span>
-          <span>Pricing</span>
-        </div>
-        <h2 className={styles.sectionTitle}>Simple, Transparent Pricing</h2>
-        <p className={styles.sectionDesc}>
-          Start free and upgrade when you&apos;re ready. No hidden fees.
-        </p>
-        <div className={styles.pricing}>
-          {plans.map((plan, i) => (
-            <div
-              key={i}
-              className={`${styles.pricingCard} ${plan.featured ? styles.pricingFeatured : ""}`}
-            >
-              {plan.featured && <div className={styles.pricingPopular}>Most Popular</div>}
-              <div className={styles.pricingName}>{plan.name}</div>
-              <div className={styles.pricingPrice}>
-                {plan.price}
-                {plan.period && <span>{plan.period}</span>}
-              </div>
-              <div className={styles.pricingDesc}>{plan.desc}</div>
-              <ul className={styles.pricingFeatures}>
-                {plan.features.map((f, j) => (
-                  <li key={j}>
-                    <span className={styles.pricingCheck}>✓</span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/signup"
-                className={`${styles.pricingButton} ${plan.featured ? styles.pricingButtonPrimary : styles.pricingButtonSecondary}`}
-              >
-                {plan.price === "Free" ? "Get Started" : "Subscribe"}
-              </Link>
-            </div>
-          ))}
-        </div>
+      <section id="pricing" className={styles.section} style={{ padding: 0 }}>
+        <PricingTable />
       </section>
 
       <section id="faq" className={styles.section}>

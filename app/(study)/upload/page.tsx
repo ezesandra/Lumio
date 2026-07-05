@@ -180,7 +180,7 @@ export default function UploadPage() {
                   <button
                     type="button"
                     className={styles.browseBtn}
-                    onClick={() => inputRef.current?.click()}
+                    onClick={(e) => { e.stopPropagation(); inputRef.current?.click(); }}
                     disabled={isPending}
                   >
                     Browse files

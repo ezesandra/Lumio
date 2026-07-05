@@ -1,7 +1,7 @@
 .button {
   font-family: var(--font-family-base);
   font-weight: 600;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   transition: all var(--transition-fast);
   display: inline-flex;
   align-items: center;

@@ -56,14 +56,17 @@ model User {
   xpTotal               Int           @default(0)
   tokenVersion          Int           @default(0)
   streakCount           Int           @default(0)
+  targetStreak          Int?
   lastStudyDate         DateTime?
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
 
   documents             Document[]
+  studyPlans            StudyPlan[]
   quizAttempts          QuizAttempt[]
   subscriptions         Subscription[]
   xpLogs                XPLog[]
+  chatMessages          ChatMessage[]
   accounts              Account[]     // NextAuth OAuth accounts
   sessions              Session[]     // NextAuth sessions
 
@@ -88,6 +91,8 @@ model Document {
   user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   studyContent    StudyContent?
   quizAttempts    QuizAttempt[]
+  studyPlans      StudyPlan[]
+  chatMessages    ChatMessage[]
 
   @@unique([userId, fileHash])
   @@index([userId])
@@ -108,6 +113,26 @@ model StudyContent {
   document              Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   @@map("study_contents")
+}
+
+model StudyPlan {
+  id          String    @id @default(cuid())
+  userId      String
+  title       String
+  description String?
+  date        DateTime
+  startTime   String
+  endTime     String
+  documentId  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document    Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([date])
+  @@map("study_plans")
 }
 
 model QuizAttempt {
@@ -157,6 +182,23 @@ model XPLog {
   @@index([userId])
   @@map("xp_logs")
 }
+
+model ChatMessage {
+  id          String   @id @default(cuid())
+  documentId  String
+  userId      String
+  role        String   // "user" or "assistant"
+  content     String
+  createdAt   DateTime @default(now())
+
+  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@index([userId])
+  @@map("chat_messages")
+}
+
 
 // ─── NextAuth Models ──────────────────────────────────────
 

@@ -5,21 +5,18 @@
   padding: var(--spacing-6);
   width: 100%;
   transition: all var(--transition-normal);
-  box-shadow: var(--shadow-sm);
 }
 
 .card:hover {
-  box-shadow: var(--shadow-md);
+  border-color: var(--color-brand);
 }
 
 .elevated {
-  box-shadow: var(--shadow-md);
-  border-color: transparent;
+  border-color: var(--color-border);
 }
 
 .elevated:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
+  border-color: var(--color-brand);
 }
 
 .title {

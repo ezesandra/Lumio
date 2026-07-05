@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileText, Layers, BrainCircuit } from "lucide-react";
+import { FileText, Layers, Video, MessageSquare } from "lucide-react";
 import styles from "./layout.module.css";
 
 const links = [
   { href: (id: string) => `/${id}/summary`, label: "Summary", icon: FileText },
   { href: (id: string) => `/${id}/flashcards`, label: "Flashcards", icon: Layers },
-  { href: (id: string) => `/${id}/quiz`, label: "Quiz", icon: BrainCircuit },
+  { href: (id: string) => `/${id}/quiz`, label: "Quiz", icon: MessageSquare },
+  { href: (id: string) => `/${id}/videos`, label: "Helpful Videos", icon: Video },
+  { href: (id: string) => `/${id}/discuss`, label: "Discuss with AI", icon: MessageSquare },
 ];
 
 export default function StudyNav({ documentId }: { documentId: string }) {

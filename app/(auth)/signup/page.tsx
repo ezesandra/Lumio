@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/Button";
 import { signupAction } from "./actions";
@@ -11,7 +11,9 @@ const inputStyle: React.CSSProperties = {
   minHeight: 50,
   width: "100%",
   borderRadius: 8,
-  border: "1px solid #d0d5dd",
+  borderWidth: "1px",
+  borderStyle: "solid",
+  borderColor: "#d0d5dd",
   background: "#fff",
   color: "#101928",
   fontSize: "0.875rem",
@@ -41,11 +43,12 @@ const fieldStyle: React.CSSProperties = {
 
 const pageStyle: React.CSSProperties = {
   minHeight: "100vh",
+  width: "100%",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  justifyContent: "center",
-  padding: "24px 16px",
+  justifyContent: "flex-start",
+  padding: "10vh 16px 24px",
   position: "relative",
   boxSizing: "border-box",
   background: "var(--color-background)",
@@ -87,10 +90,14 @@ const googleBtnStyle: React.CSSProperties = {
   fontWeight: 500,
   cursor: "pointer",
   transition: "background 0.2s",
+  padding: "0 16px",
+  boxSizing: "border-box",
 };
 
 export default function SignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const errorParam = searchParams.get("error");
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -170,7 +177,17 @@ export default function SignupPage() {
       if (result?.error) {
         setError(result.error);
       } else if (result?.success) {
-        router.push("/login");
+        const res = await signIn("credentials", {
+          email: formData.get("email"),
+          password: formData.get("password"),
+          redirect: false,
+        });
+        
+        if (res?.ok) {
+          router.push("/onboarding");
+        } else {
+          router.push("/login");
+        }
       }
     });
   };
@@ -185,6 +202,12 @@ export default function SignupPage() {
 
         <h1 style={{ textAlign: "center", fontFamily: "var(--font-family-display)", fontSize: "1.5rem", fontWeight: 700, color: "#101928", marginBottom: 4 }}>Create Account</h1>
         <p style={{ textAlign: "center", color: "#667185", fontSize: "0.875rem", marginBottom: 40, marginTop: 8 }}>Enter your credentials to create your account</p>
+
+        {errorParam && !error && (
+          <div style={{ color: "#e53e3e", fontSize: "0.875rem", textAlign: "center", marginBottom: 16, padding: "8px 12px", background: "rgba(229,62,62,0.1)", borderRadius: 8 }}>
+            Authentication failed: {errorParam}
+          </div>
+        )}
 
         {error && (
           <div style={{ color: "#e53e3e", fontSize: "0.875rem", textAlign: "center", marginBottom: 16, padding: "8px 12px", background: "rgba(229,62,62,0.1)", borderRadius: 8 }}>
@@ -283,7 +306,7 @@ export default function SignupPage() {
         </div>
 
         <button
-          onClick={() => signIn("google")}
+          onClick={() => signIn("google", { callbackUrl: "/upload" })}
           onMouseEnter={() => setGoogleHover(true)}
           onMouseLeave={() => setGoogleHover(false)}
           style={{ ...googleBtnStyle, background: googleHover ? "#f5f5f5" : "#fff" }}

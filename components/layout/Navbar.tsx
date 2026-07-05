@@ -1,18 +1,17 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { LayoutDashboard, Upload, FileText, Clock, BookOpen, BarChart3, Settings, LogOut, Sparkles, User } from "lucide-react";
+import { Upload, FileText, Clock, BookOpen, BarChart3, Settings, LogOut, Sparkles, User, Menu, File, ChevronUp, ChevronDown, Crown } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { useSidebar } from "./SidebarContext";
 import styles from "./Navbar.module.css";
 
 const mainNav = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/upload", label: "New Document", icon: Upload },
   { href: "/library", label: "All Documents", icon: FileText },
-  { href: "/recent", label: "Recent Documents", icon: Clock },
 ];
 
 const learningNav = [
@@ -23,12 +22,15 @@ const learningNav = [
 export function Navbar() {
   const { data: session, status } = useSession();
   const pathname = usePathname();
+  const { isOpen: sidebarOpen, toggle: toggleSidebar } = useSidebar();
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const isLanding = pathname === "/";
   const isAuth = pathname === "/login" || pathname === "/signup" || pathname === "/reset-password" || pathname.startsWith("/verify-email");
 
   if (isAuth || pathname === "/onboarding") return null;
 
-  if (isLanding && status !== "authenticated") {
+  if (isLanding) {
     return (
       <header className={styles.landingHeader}>
         <div className={styles.pill}>
@@ -42,8 +44,14 @@ export function Navbar() {
             <a href="#faq" className={styles.pillLink}>FAQ</a>
           </nav>
           <div className={styles.pillActions}>
-            <Link href="/login" className={styles.pillLink}>Log In</Link>
-            <Link href="/signup" className={styles.pillSignup}>Get Started</Link>
+            {status === "authenticated" ? (
+              <Link href="/library" className={styles.pillSignup}>Get Started</Link>
+            ) : (
+              <>
+                <Link href="/login" className={styles.pillLink}>Log In</Link>
+                <Link href="/signup" className={styles.pillSignup}>Get Started</Link>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -54,11 +62,20 @@ export function Navbar() {
     const userName = session?.user?.name || session?.user?.email?.split("@")[0] || "User";
 
     return (
-      <aside className={styles.sidebar}>
+      <>
+      <aside className={`${styles.sidebar} ${!sidebarOpen ? styles.sidebarCollapsed : ""}`}>
         <div className={styles.sidebarHeader}>
-          <Link href="/dashboard" className={styles.logo}>
+          <button
+            type="button"
+            className={styles.sidebarToggle}
+            onClick={toggleSidebar}
+            aria-label="Toggle sidebar"
+          >
+            <Menu size={18} />
+          </button>
+          <Link href="/library" className={styles.logo}>
             <Sparkles size={22} />
-            Lumio
+            <span className={styles.sidebarLogoText}>Lumio</span>
           </Link>
         </div>
 
@@ -77,6 +94,8 @@ export function Navbar() {
               </Link>
             );
           })}
+
+          <DocumentDropdown sidebarOpen={sidebarOpen} />
 
           <div className={styles.sidebarDivider} />
 
@@ -97,31 +116,79 @@ export function Navbar() {
         </nav>
 
         <div className={styles.sidebarFooter}>
-          <div className={styles.sidebarUser}>
-            <div className={styles.sidebarAvatar}>
-              <User size={16} />
-            </div>
-            <div className={styles.sidebarUserInfo}>
-              <span className={styles.sidebarUserName}>{userName}</span>
-            </div>
-          </div>
-          <Link
-            href="/settings"
-            className={`${styles.sidebarLink} ${pathname === "/settings" ? styles.sidebarLinkActive : ""}`}
+          <button 
+            className={styles.sidebarUserButton} 
+            onClick={() => setUserMenuOpen(!userMenuOpen)}
           >
-            <Settings size={18} />
-            Settings
-          </Link>
+            <div className={styles.sidebarUser}>
+              <div className={styles.sidebarAvatar}>
+                <User size={16} />
+              </div>
+              <div className={styles.sidebarUserInfo}>
+                <span className={styles.sidebarUserName}>{userName}</span>
+              </div>
+            </div>
+          </button>
+          
+          {userMenuOpen && (
+            <div className={styles.userPopover}>
+              <div className={styles.popoverHeader}>
+                <span className={styles.popoverEmail}>{session?.user?.email}</span>
+              </div>
+              <div className={styles.popoverDivider} />
+              <Link
+                href="/settings"
+                className={styles.popoverLink}
+                onClick={() => setUserMenuOpen(false)}
+              >
+                <Settings size={16} />
+                Settings
+              </Link>
+              <Link
+                href="/subscription"
+                className={styles.popoverLink}
+                onClick={() => setUserMenuOpen(false)}
+              >
+                <Crown size={16} />
+                Manage Subscription
+              </Link>
+            </div>
+          )}
+          
           <button
             className={styles.sidebarLogout}
-            onClick={() => signOut({ callbackUrl: "/" })}
+            onClick={() => setShowLogoutConfirm(true)}
           >
             <LogOut size={18} />
             Log Out
           </button>
         </div>
       </aside>
-    );
+
+      {showLogoutConfirm && (
+        <div className={styles.logoutOverlay}>
+          <div className={styles.logoutModal}>
+            <h3 className={styles.logoutTitle}>Log Out</h3>
+            <p className={styles.logoutText}>Are you sure you want to log out of your account?</p>
+            <div className={styles.logoutActions}>
+              <button 
+                className={styles.logoutCancel} 
+                onClick={() => setShowLogoutConfirm(false)}
+              >
+                Cancel
+              </button>
+              <button 
+                className={styles.logoutConfirm} 
+                onClick={() => signOut({ callbackUrl: "/" })}
+              >
+                Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
   }
 
   return (
@@ -141,5 +208,69 @@ export function Navbar() {
         </div>
       </div>
     </header>
+  );
+}
+
+interface DocumentItem {
+  id: string;
+  documentTitle: string;
+  status: string;
+}
+
+function DocumentDropdown({ sidebarOpen }: { sidebarOpen: boolean }) {
+  const [documents, setDocuments] = useState<DocumentItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const fetchDocs = () => {
+      setLoading(true);
+      fetch("/api/documents")
+        .then((r) => r.json())
+        .then((data) => setDocuments(data.documents ?? []))
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    };
+
+    fetchDocs();
+
+    window.addEventListener("lumio:document-deleted", fetchDocs);
+    window.addEventListener("lumio:document-updated", fetchDocs);
+
+    return () => {
+      window.removeEventListener("lumio:document-deleted", fetchDocs);
+      window.removeEventListener("lumio:document-updated", fetchDocs);
+    };
+  }, []);
+
+
+
+  return (
+    <div className={styles.sidebarSection}>
+      <div className={styles.sidebarSectionLabel}>
+        <Clock size={14} />
+        Recent Documents
+      </div>
+      <div className={styles.recentList}>
+        {loading && documents.length === 0 && <div className={styles.recentItem}>Loading...</div>}
+        {!loading && documents.length === 0 && <div className={styles.recentItem}>No documents yet</div>}
+        {documents.slice(0, 5).map((doc) => {
+          const docActive = pathname === `/${doc.id}/summary`;
+          return (
+            <button
+              key={doc.id}
+              type="button"
+              onClick={() => router.push(`/${doc.id}/summary`)}
+              className={`${styles.recentItem} ${styles.recentItemButton} ${docActive ? styles.recentItemActive : ""}`}
+            >
+              <File size={14} />
+              <span className={styles.recentItemTitle}>{doc.documentTitle || "Untitled"}</span>
+
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }

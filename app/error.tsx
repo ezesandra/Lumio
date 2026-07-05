@@ -47,7 +47,7 @@ export default function GlobalError({
       </p>
       <div style={{ display: "flex", gap: "var(--spacing-4)" }}>
         <Button onClick={reset} variant="primary">Try Again</Button>
-        <Button onClick={() => window.location.href = "/dashboard"} variant="secondary">Go to Dashboard</Button>
+        <Button onClick={() => window.location.href = "/library"} variant="secondary">Go to Library</Button>
       </div>
     </div>
   );

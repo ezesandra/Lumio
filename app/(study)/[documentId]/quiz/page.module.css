@@ -1,6 +1,13 @@
 .container {
-  max-width: 800px;
+  width: 100%;
   margin: 0 auto;
+}
+
+.gridContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+  width: 100%;
 }
 
 .questionCard {
@@ -38,7 +45,8 @@
   border-color: var(--color-brand);
 }
 
-.selected {
+.option.selected,
+.option.selected:hover {
   border-color: var(--color-brand);
   background: var(--color-brand-subtle);
 }

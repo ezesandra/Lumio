@@ -5,7 +5,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { LIMITS, TierKey } from "@/lib/limits";
 import { generateStudyContent } from "@/lib/ai";
-import crypto from "crypto";
+import { saveFile } from "@/lib/storage";
+import { extractText } from "@/lib/textract";
 import { z } from "zod";
 
 const testFormats = ["multiple-choice", "flashcard", "multiple-true-false", "oral", "essay"] as const;
@@ -38,14 +39,40 @@ export async function uploadDocumentAction(formData: FormData) {
       return { error: `File size exceeds the ${tier} tier limit of ${limits.maxFileSizeBytes / (1024 * 1024)}MB.` };
     }
 
-    const fileHash = crypto.randomBytes(16).toString("hex"); 
-    const fileUrl = `https://mock-storage.lumio.app/uploads/${session.user.id}/${file.name}`;
+    if (parsed.data.questionCount > limits.questionsPerTest) {
+      return { error: `Your ${tier} tier is limited to ${limits.questionsPerTest} questions per test. Please upgrade for more.` };
+    }
+
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const monthlyCount = await prisma.document.count({
+      where: {
+        userId: session.user.id,
+        createdAt: { gte: startOfMonth },
+      },
+    });
+
+    if (monthlyCount >= limits.practiceTestsPerMonth) {
+      return { error: `You've reached your ${tier} plan limit of ${limits.practiceTestsPerMonth} practice tests per month. Please upgrade to continue.` };
+    }
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const { filePath, fileHash } = await saveFile(buffer, file.name);
+
+    let text = "";
+    try {
+      text = await extractText(filePath);
+    } catch {
+      text = "";
+    }
 
     const document = await prisma.document.create({
       data: {
         userId: session.user.id,
         fileName: file.name,
-        fileUrl,
+        fileUrl: filePath,
         fileHash,
         fileSize: file.size,
         documentTitle: parsed.data.documentTitle,
@@ -55,8 +82,7 @@ export async function uploadDocumentAction(formData: FormData) {
       },
     });
 
-    // Trigger async AI processing (fire and forget)
-    generateStudyContent(document.id).catch(console.error);
+    generateStudyContent(document.id, text).catch(console.error);
 
     return { success: true, documentId: document.id };
   } catch (error) {

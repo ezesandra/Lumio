@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, use } from "react";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { requestPasswordResetAction, resetPasswordAction } from "./actions";
 
@@ -9,7 +10,9 @@ const inputStyle: React.CSSProperties = {
   minHeight: 50,
   width: "100%",
   borderRadius: 8,
-  border: "1px solid #d0d5dd",
+  borderWidth: "1px",
+  borderStyle: "solid",
+  borderColor: "#d0d5dd",
   background: "#fff",
   color: "#101928",
   fontSize: "0.875rem",
@@ -72,14 +75,23 @@ const linkStyle: React.CSSProperties = {
 export default function ResetPasswordPage({
   searchParams,
 }: {
-  searchParams: { token?: string };
+  searchParams: Promise<{ token?: string }>;
 }) {
-  const token = searchParams?.token;
+  const resolvedSearchParams = use(searchParams);
+  const token = resolvedSearchParams?.token;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+
+  const passwordReqs = [
+    { label: "password must be minimum of 8 characters", test: (v: string) => v.length >= 8 },
+    { label: "must contain an uppercase", test: (v: string) => /[A-Z]/.test(v) },
+    { label: "must contain a number", test: (v: string) => /\d/.test(v) },
+    { label: "must contain a special character", test: (v: string) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(v) },
+  ];
 
   const handleRequestReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,6 +110,12 @@ export default function ResetPasswordPage({
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!passwordReqs.every((r) => r.test(password))) {
+      setStatus("error");
+      setMessage("Please meet all password requirements.");
+      return;
+    }
+    
     setStatus("loading");
     const formData = new FormData();
     formData.set("token", token || "");
@@ -143,15 +161,43 @@ export default function ResetPasswordPage({
               <form onSubmit={handleResetPassword} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                 <div style={fieldStyle}>
                   <label style={labelStyle}>New Password</label>
-                  <input
-                    type="password"
-                    placeholder="At least 8 characters"
-                    required
-                    minLength={8}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    style={inputStyle}
-                  />
+                  <div style={{ position: "relative", width: "100%" }}>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="At least 8 characters"
+                      required
+                      minLength={8}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      style={{ ...inputStyle, paddingRight: 40 }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      style={{
+                        position: "absolute",
+                        right: 12,
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        background: "none",
+                        border: "none",
+                        padding: 0,
+                        cursor: "pointer",
+                        color: "#667185",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                  {password.length > 0 && !passwordReqs.every((r) => r.test(password)) && (
+                    <span style={{ color: "#e53e3e", fontSize: "0.75rem", marginTop: 4 }}>
+                      {passwordReqs.find((r) => !r.test(password))?.label}
+                    </span>
+                  )}
                 </div>
                 <Button type="submit" disabled={status === "loading"} style={{ width: "100%", height: 50, fontSize: "0.9rem" }}>
                   {status === "loading" ? "Resetting..." : "Reset Password"}

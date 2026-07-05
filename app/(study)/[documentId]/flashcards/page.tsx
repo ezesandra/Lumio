@@ -16,7 +16,7 @@ export default async function FlashcardsPage({ params }: { params: Promise<{ doc
     include: { studyContent: true }
   });
 
-  if (!document || document.userId !== session.user.id) redirect("/dashboard");
+  if (!document || document.userId !== session.user.id) redirect("/library");
 
   if (document.status === "PROCESSING") {
     return <div>Processing Document...</div>;

@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { Aurora } from "@/components/effects/Aurora";
 import { completeOnboardingAction } from "./actions";
 import styles from "./page.module.css";
 
@@ -26,12 +25,11 @@ export default function OnboardingPage() {
   async function handleFinish() {
     setIsPending(true);
     await completeOnboardingAction();
-    router.push("/dashboard");
+    router.push("/upload");
   }
 
   return (
     <div className={styles.page}>
-      <Aurora />
       <div className={styles.container}>
         <div className={styles.progress}>
           {steps.map((s, i) => (
@@ -44,7 +42,7 @@ export default function OnboardingPage() {
           ))}
         </div>
 
-        <Card elevated className={styles.card}>
+        <Card className={styles.card}>
           {step === "welcome" && (
             <div className={styles.content}>
               <div className={styles.illustration}>

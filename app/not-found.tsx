@@ -34,8 +34,8 @@ export default function NotFound() {
       }}>
         The page you're looking for doesn't exist or has been moved.
       </p>
-      <Link href="/dashboard">
-        <Button variant="primary">Back to Dashboard</Button>
+      <Link href="/library">
+        <Button variant="primary">Back to Library</Button>
       </Link>
     </div>
   );

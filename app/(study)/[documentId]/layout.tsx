@@ -3,7 +3,8 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import { Clock, CheckCircle2, AlertCircle, Plus } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 import StudyNav from "./StudyNav";
 import styles from "./layout.module.css";
 
@@ -39,23 +40,30 @@ export default async function StudyLayout({
   });
 
   if (!document || document.userId !== session.user.id) {
-    redirect("/dashboard");
+    redirect("/library");
   }
 
   const StatusIcon = statusIcons[document.status as keyof typeof statusIcons] || Clock;
 
   return (
     <div className={styles.container}>
-      <aside className={styles.sidebar}>
-        <div className={styles.sidebarHeader}>
-          <h2 className={styles.docTitle}>{document.documentTitle}</h2>
-          <span className={styles.docStatus} style={{ color: statusColors[document.status as keyof typeof statusColors] || "var(--color-text-secondary)" }}>
-            <StatusIcon size={12} />
-            {document.status}
-          </span>
+      <header className={styles.topBar}>
+        <div className={styles.topBarTopRow}>
+          <div className={styles.topBarHeader}>
+            <h2 className={styles.docTitle}>{document.documentTitle}</h2>
+            <span className={styles.docStatus} style={{ color: statusColors[document.status as keyof typeof statusColors] || "var(--color-text-secondary)" }}>
+              <StatusIcon size={12} />
+              {document.status}
+            </span>
+          </div>
+          <Button variant="primary" size="sm">
+            New Test
+          </Button>
         </div>
-        <StudyNav documentId={documentId} />
-      </aside>
+        <nav className={styles.topBarNav}>
+          <StudyNav documentId={documentId} />
+        </nav>
+      </header>
       <main className={styles.content}>
         {children}
       </main>

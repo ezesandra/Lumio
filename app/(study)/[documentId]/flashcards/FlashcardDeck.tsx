@@ -34,9 +34,9 @@ export function FlashcardDeck({ cards }: { cards: Flashcard[] }) {
   if (completed) {
     return (
       <div className={styles.completed}>
-        <h2>Great job! You've completed this deck.</h2>
-        <div className={styles.xpAward}>+20 XP</div>
-        <Button onClick={() => { setCompleted(false); setCurrentIndex(0); setIsFlipped(false); }}>
+        <h2>Deck Completed!</h2>
+        <p>Great job reviewing your flashcards.</p>
+        <Button onClick={() => window.location.reload()} style={{ marginTop: "var(--spacing-4)" }}>
           Review Again
         </Button>
       </div>

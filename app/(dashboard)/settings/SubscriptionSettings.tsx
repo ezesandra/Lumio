@@ -30,10 +30,24 @@ export function SubscriptionSettings({ userId, email, currentTier, expiresAt, pu
       userId,
       plan: planId,
       billingCycle: cycle,
-      onSuccess: (res) => {
+      onSuccess: async (res) => {
         console.log("Payment successful", res);
-        // Usually, the webhook handles DB updates. We can just refresh the page.
-        window.location.reload();
+        try {
+          const verifyRes = await fetch("/api/subscription/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ transaction_id: res.transaction_id || res.id })
+          });
+          if (verifyRes.ok) {
+            window.location.reload();
+          } else {
+            alert("Verification failed. Please contact support.");
+            setLoadingPlan(null);
+          }
+        } catch (e) {
+          console.error(e);
+          setLoadingPlan(null);
+        }
       },
       onClose: () => {
         setLoadingPlan(null);

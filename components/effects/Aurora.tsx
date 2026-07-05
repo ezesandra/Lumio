@@ -33,11 +33,11 @@ export function Aurora() {
       ctx.clearRect(0, 0, w, h);
 
       const layers = [
-        { baseY: 0.25, amp: 0.15, freq: 0.003, speed: 1, color: "150, 130, 255", alpha: 0.2 },
-        { baseY: 0.3, amp: 0.12, freq: 0.005, speed: 1.2, color: "100, 180, 255", alpha: 0.15 },
-        { baseY: 0.18, amp: 0.18, freq: 0.002, speed: 0.6, color: "200, 150, 255", alpha: 0.12 },
-        { baseY: 0.35, amp: 0.1, freq: 0.006, speed: 1.5, color: "80, 200, 255", alpha: 0.1 },
-        { baseY: 0.22, amp: 0.14, freq: 0.004, speed: 0.9, color: "180, 120, 255", alpha: 0.15 },
+        { baseY: 0.25, amp: 0.15, freq: 0.003, speed: 1, color: "200, 200, 200", alpha: 0.2 },
+        { baseY: 0.3, amp: 0.12, freq: 0.005, speed: 1.2, color: "100, 100, 100", alpha: 0.15 },
+        { baseY: 0.18, amp: 0.18, freq: 0.002, speed: 0.6, color: "50, 50, 50", alpha: 0.12 },
+        { baseY: 0.35, amp: 0.1, freq: 0.006, speed: 1.5, color: "0, 0, 0", alpha: 0.2 },
+        { baseY: 0.22, amp: 0.14, freq: 0.004, speed: 0.9, color: "150, 150, 150", alpha: 0.15 },
       ];
 
       for (const layer of layers) {
@@ -70,9 +70,9 @@ export function Aurora() {
       }
 
       const glow = ctx.createRadialGradient(w / 2, h * 0.2, 0, w / 2, h * 0.2, w * 0.7);
-      glow.addColorStop(0, `rgba(150, 130, 255, ${0.06 + Math.sin(time * 0.3) * 0.025})`);
-      glow.addColorStop(0.4, `rgba(100, 180, 255, ${0.04 + Math.sin(time * 0.2 + 1) * 0.015})`);
-      glow.addColorStop(1, "rgba(255, 255, 255, 0)");
+      glow.addColorStop(0, `rgba(200, 200, 200, ${0.06 + Math.sin(time * 0.3) * 0.025})`);
+      glow.addColorStop(0.4, `rgba(100, 100, 100, ${0.04 + Math.sin(time * 0.2 + 1) * 0.015})`);
+      glow.addColorStop(1, "rgba(50, 50, 50, 0)");
 
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, w, h);

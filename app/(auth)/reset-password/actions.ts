@@ -10,9 +10,11 @@ const requestSchema = z.object({
   email: z.string().email(),
 });
 
+const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
 const resetSchema = z.object({
   token: z.string().min(1),
-  password: z.string().min(8),
+  password: z.string().regex(PASSWORD_REGEX, "Password must be at least 8 characters and contain an uppercase letter, a number, and a special character."),
 });
 
 export async function requestPasswordResetAction(formData: FormData) {
@@ -26,7 +28,7 @@ export async function requestPasswordResetAction(formData: FormData) {
   try {
     const user = await prisma.user.findUnique({
       where: { email },
-      select: { id: true },
+      select: { id: true, name: true },
     });
 
     if (user) {
@@ -41,7 +43,7 @@ export async function requestPasswordResetAction(formData: FormData) {
         data: { identifier: `reset:${email}`, token, expires },
       });
 
-      await sendPasswordResetEmail(email, token);
+      await sendPasswordResetEmail(email, token, user.name);
     }
 
     return { success: true };
