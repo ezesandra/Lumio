@@ -75,19 +75,15 @@ export default function LandingPage() {
 
       <div className={styles.metrics}>
         <div className={styles.metricCard}>
-          <div className={styles.metricNumber}>50K+</div>
-          <div className={styles.metricLabel}>Active Students</div>
+          <div className={styles.metricNumber}>50k+</div>
+          <div className={styles.metricLabel}>Documents Analyzed</div>
         </div>
         <div className={styles.metricCard}>
           <div className={styles.metricNumber}>1M+</div>
-          <div className={styles.metricLabel}>Flashcards Created</div>
+          <div className={styles.metricLabel}>Questions Answered</div>
         </div>
         <div className={styles.metricCard}>
-          <div className={styles.metricNumber}>98%</div>
-          <div className={styles.metricLabel}>Satisfaction Rate</div>
-        </div>
-        <div className={styles.metricCard}>
-          <div className={styles.metricNumber}>4.9★</div>
+          <div className={styles.metricNumber}>4.9/5</div>
           <div className={styles.metricLabel}>Average Rating</div>
         </div>
       </div>

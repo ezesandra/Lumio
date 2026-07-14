@@ -10,7 +10,7 @@ import { initFlutterwavePayment } from "@/lib/flutterwave";
 
 export function PricingTable() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const [billingCycle, setBillingCycle] = useState<"MONTHLY" | "YEARLY">("YEARLY");
   const [verifying, setVerifying] = useState(false);
 
@@ -45,6 +45,7 @@ export function PricingTable() {
             body: JSON.stringify({ transaction_id: res.transaction_id || res.id })
           });
           if (verifyRes.ok) {
+            await update({ subscriptionTier: plan });
             window.location.href = "/subscription";
           } else {
             alert("Verification failed. Please contact support.");
@@ -166,25 +167,6 @@ export function PricingTable() {
             { label: "Unlimited questions", included: true },
           ]}
         />
-      </div>
-
-      <div className={styles.statsSection}>
-        <h3 className={styles.statsTitle}>Trusted by students everywhere</h3>
-        <p className={styles.statsDesc}>Thousands of learners are boosting their grades with Lumio.</p>
-        <div className={styles.statsGrid}>
-          <div className={styles.statItem}>
-            <span className={styles.statValue}>50k+</span>
-            <span className={styles.statLabel}>Documents Analyzed</span>
-          </div>
-          <div className={styles.statItem}>
-            <span className={styles.statValue}>1M+</span>
-            <span className={styles.statLabel}>Questions Answered</span>
-          </div>
-          <div className={styles.statItem}>
-            <span className={styles.statValue}>4.9/5</span>
-            <span className={styles.statLabel}>Average Rating</span>
-          </div>
-        </div>
       </div>
     </div>
   );

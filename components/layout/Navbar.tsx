@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { Upload, FileText, Clock, BookOpen, BarChart3, Settings, LogOut, Sparkles, User, Menu, File, ChevronUp, ChevronDown, Crown } from "lucide-react";
+import { Upload, FileText, Clock, BookOpen, BarChart3, Settings, LogOut, Sparkles, User, Menu, File, ChevronUp, ChevronDown, Crown, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useSidebar } from "./SidebarContext";
 import styles from "./Navbar.module.css";
@@ -25,10 +25,11 @@ export function Navbar() {
   const { isOpen: sidebarOpen, toggle: toggleSidebar } = useSidebar();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [landingMenuOpen, setLandingMenuOpen] = useState(false);
   const isLanding = pathname === "/";
-  const isAuth = pathname === "/login" || pathname === "/signup" || pathname === "/reset-password" || pathname.startsWith("/verify-email");
+  const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/signup") || pathname.startsWith("/verify-email") || pathname.startsWith("/reset-password") || pathname.startsWith("/onboarding");
 
-  if (isAuth || pathname === "/onboarding") return null;
+  if (isAuthPage) return null;
 
   if (isLanding) {
     return (
@@ -53,7 +54,35 @@ export function Navbar() {
               </>
             )}
           </div>
+          
+          <button 
+            className={styles.landingMenuToggle}
+            onClick={() => setLandingMenuOpen(!landingMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {landingMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
+
+        {landingMenuOpen && (
+          <div className={styles.landingMobileMenu}>
+            <nav className={styles.mobileNavLinks}>
+              <a href="#features" className={styles.mobileNavLink} onClick={() => setLandingMenuOpen(false)}>Features</a>
+              <a href="#pricing" className={styles.mobileNavLink} onClick={() => setLandingMenuOpen(false)}>Pricing</a>
+              <a href="#faq" className={styles.mobileNavLink} onClick={() => setLandingMenuOpen(false)}>FAQ</a>
+            </nav>
+            <div className={styles.mobileNavActions}>
+              {status === "authenticated" ? (
+                <Link href="/library" className={styles.mobileSignup} onClick={() => setLandingMenuOpen(false)}>Get Started</Link>
+              ) : (
+                <>
+                  <Link href="/login" className={styles.mobileLogin} onClick={() => setLandingMenuOpen(false)}>Log In</Link>
+                  <Link href="/signup" className={styles.mobileSignup} onClick={() => setLandingMenuOpen(false)}>Get Started</Link>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </header>
     );
   }
@@ -63,7 +92,26 @@ export function Navbar() {
 
     return (
       <>
-      <aside className={`${styles.sidebar} ${!sidebarOpen ? styles.sidebarCollapsed : ""}`}>
+      {sidebarOpen && (
+        <div className={styles.sidebarBackdrop} onClick={toggleSidebar} />
+      )}
+      
+      <div className={styles.mobileHeader}>
+        <button
+          type="button"
+          className={styles.mobileMenuButton}
+          onClick={toggleSidebar}
+          aria-label="Open sidebar"
+        >
+          <Menu size={20} />
+        </button>
+        <Link href="/library" className={styles.logo} style={{ fontSize: "1.2rem", padding: 0 }}>
+          <Sparkles size={18} />
+          Lumio
+        </Link>
+      </div>
+
+      <aside className={`${styles.sidebar} ${!sidebarOpen ? styles.sidebarCollapsed : ""} ${sidebarOpen ? styles.sidebarMobileOpen : ""}`}>
         <div className={styles.sidebarHeader}>
           <button
             type="button"
@@ -73,7 +121,7 @@ export function Navbar() {
           >
             <Menu size={18} />
           </button>
-          <Link href="/library" className={styles.logo}>
+          <Link href="/library" className={styles.logo} onClick={sidebarOpen ? toggleSidebar : undefined}>
             <Sparkles size={22} />
             <span className={styles.sidebarLogoText}>Lumio</span>
           </Link>
@@ -88,6 +136,9 @@ export function Navbar() {
                 key={`${item.href}-${item.label}`}
                 href={item.href}
                 className={`${styles.sidebarLink} ${isActive ? styles.sidebarLinkActive : ""}`}
+                onClick={() => {
+                  if (sidebarOpen && window.innerWidth <= 768) toggleSidebar();
+                }}
               >
                 <item.icon size={18} />
                 {item.label}
@@ -95,7 +146,7 @@ export function Navbar() {
             );
           })}
 
-          <DocumentDropdown sidebarOpen={sidebarOpen} />
+          <DocumentDropdown sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
 
           <div className={styles.sidebarDivider} />
 
@@ -107,6 +158,9 @@ export function Navbar() {
                 key={`${item.href}-${item.label}`}
                 href={item.href}
                 className={`${styles.sidebarLink} ${isActive ? styles.sidebarLinkActive : ""}`}
+                onClick={() => {
+                  if (sidebarOpen && window.innerWidth <= 768) toggleSidebar();
+                }}
               >
                 <item.icon size={18} />
                 {item.label}
@@ -217,7 +271,7 @@ interface DocumentItem {
   status: string;
 }
 
-function DocumentDropdown({ sidebarOpen }: { sidebarOpen: boolean }) {
+function DocumentDropdown({ sidebarOpen, toggleSidebar }: { sidebarOpen: boolean; toggleSidebar: () => void }) {
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -261,7 +315,10 @@ function DocumentDropdown({ sidebarOpen }: { sidebarOpen: boolean }) {
             <button
               key={doc.id}
               type="button"
-              onClick={() => router.push(`/${doc.id}/summary`)}
+              onClick={() => {
+                router.push(`/${doc.id}/summary`);
+                if (sidebarOpen && window.innerWidth <= 768) toggleSidebar();
+              }}
               className={`${styles.recentItem} ${styles.recentItemButton} ${docActive ? styles.recentItemActive : ""}`}
             >
               <File size={14} />

@@ -1,0 +1,26 @@
+.offset {
+  transition: padding-left var(--transition-normal);
+}
+
+.offsetLanding {
+  padding-left: 0;
+}
+
+.offsetAuth {
+  padding-left: 0;
+}
+
+.offsetAuthenticatedOpen {
+  padding-left: 240px;
+}
+
+.offsetAuthenticatedClosed {
+  padding-left: 64px;
+}
+
+@media (max-width: 768px) {
+  .offsetAuthenticatedOpen,
+  .offsetAuthenticatedClosed {
+    padding-left: 0;
+  }
+}

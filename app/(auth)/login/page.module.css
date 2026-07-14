@@ -49,3 +49,9 @@
 .link:hover {
   text-decoration: underline;
 }
+
+@media (max-width: 768px) {
+  .container {
+    padding: calc(60px + var(--spacing-4)) var(--spacing-4) var(--spacing-4);
+  }
+}

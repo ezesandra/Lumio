@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { completeOnboardingAction } from "./actions";
@@ -17,6 +18,7 @@ const steps: { key: Step; title: string }[] = [
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { update } = useSession();
   const [step, setStep] = useState<Step>("welcome");
   const [isPending, setIsPending] = useState(false);
 
@@ -25,6 +27,7 @@ export default function OnboardingPage() {
   async function handleFinish() {
     setIsPending(true);
     await completeOnboardingAction();
+    await update({ onboardingCompleted: true });
     router.push("/upload");
   }
 

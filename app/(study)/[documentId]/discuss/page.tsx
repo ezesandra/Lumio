@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/Input";
 import { Send, User, Bot, Loader2, MessageSquare } from "lucide-react";
 import { useParams } from "next/navigation";
 
-export default function DiscussPage() {
+export default function DiscussPage({ params: _params }: { params: Promise<{ documentId: string }> }) {
   const params = useParams() as { documentId: string };
   const documentId = params.documentId;
 

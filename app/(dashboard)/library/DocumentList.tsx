@@ -144,14 +144,15 @@ export function DocumentList({ documents }: { documents: Document[] }) {
 
       <div className={styles.grid}>
         {paged.map((doc) => (
-          <div key={doc.id} className={styles.card}>
+          <div 
+            key={doc.id} 
+            className={styles.card}
+            onClick={() => router.push(`/${doc.id}/summary`)}
+          >
             <div className={styles.cardBody}>
               <DocumentIcon />
               <div className={styles.cardInfo}>
-                <p
-                  className={styles.cardTitle}
-                  onClick={() => router.push(`/${doc.id}/summary`)}
-                >
+                <p className={styles.cardTitle}>
                   {doc.documentTitle || doc.fileName}
                 </p>
                 <p className={styles.cardDate}>

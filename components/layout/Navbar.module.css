@@ -612,3 +612,170 @@
 .logoutConfirm:hover {
   filter: brightness(0.9);
 }
+
+.mobileHeader {
+  display: none;
+}
+
+.mobileMenuButton {
+  display: none;
+}
+
+.landingMenuToggle {
+  display: none;
+}
+
+.landingMobileMenu {
+  display: none;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .pillNav {
+    display: none;
+  }
+  
+  .pill {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+    width: 240px;
+  }
+
+  .sidebarMobileOpen {
+    transform: translateX(0);
+  }
+
+  .sidebarBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: calc(var(--z-sticky) - 1);
+    animation: fadeIn 0.2s ease;
+  }
+
+  .mobileHeader {
+    position: sticky;
+    top: 0;
+    height: 60px;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    padding: 0 var(--spacing-4);
+    z-index: calc(var(--z-sticky) - 2);
+  }
+
+  .mobileMenuButton {
+    background: none;
+    border: none;
+    color: var(--color-text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-2);
+    margin-right: var(--spacing-2);
+    cursor: pointer;
+  }
+
+  .pillActions {
+    display: none;
+  }
+
+  .landingMenuToggle {
+    display: flex;
+    background: none;
+    border: none;
+    color: var(--color-on-surface);
+    padding: var(--spacing-2);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .landingMobileMenu {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: calc(100% + var(--spacing-2));
+    left: 24px;
+    right: 24px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: var(--spacing-4);
+    gap: var(--spacing-4);
+    animation: slideDown 0.2s ease;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .mobileNavLinks {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  .mobileNavLink {
+    font-family: var(--font-family-base);
+    font-size: 1rem;
+    color: var(--color-on-surface-variant);
+    text-decoration: none;
+    padding: var(--spacing-3);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+  }
+
+  .mobileNavLink:hover {
+    color: var(--color-on-surface);
+    background: var(--color-surface-hover);
+  }
+
+  .mobileNavActions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--spacing-4);
+  }
+
+  .mobileLogin {
+    display: flex;
+    justify-content: center;
+    font-family: var(--font-family-base);
+    font-size: 1rem;
+    color: var(--color-on-surface-variant);
+    text-decoration: none;
+    padding: var(--spacing-3);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-hover);
+    font-weight: 500;
+  }
+
+  .mobileSignup {
+    display: flex;
+    justify-content: center;
+    font-family: var(--font-family-base);
+    font-size: 1rem;
+    color: var(--color-on-primary);
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--color-primary), hsl(256, 44%, 45%));
+    padding: var(--spacing-3);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+  }
+}
+

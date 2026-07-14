@@ -30,6 +30,8 @@ export const authOptions: NextAuthOptions = {
               id: profile.sub,
               name: profile.name,
               email: profile.email,
+              subscriptionTier: "FREE",
+              onboardingCompleted: false,
               // Omit image because it's not in the Prisma User schema
             }
           }
@@ -54,6 +56,7 @@ export const authOptions: NextAuthOptions = {
             passwordHash: true,
             emailVerified: true,
             subscriptionTier: true,
+            onboardingCompleted: true,
           },
         });
 
@@ -67,15 +70,22 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           email: user.email,
           subscriptionTier: user.subscriptionTier,
+          onboardingCompleted: user.onboardingCompleted,
         };
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
+      if (trigger === "update") {
+        if (session?.onboardingCompleted !== undefined) token.onboardingCompleted = session.onboardingCompleted;
+        if (session?.subscriptionTier !== undefined) token.subscriptionTier = session.subscriptionTier;
+      }
+
       if (user) {
         token.id = user.id;
         token.subscriptionTier = user.subscriptionTier;
+        token.onboardingCompleted = (user as any).onboardingCompleted ?? false;
       }
 
       if (token.id) {
@@ -86,10 +96,11 @@ export const authOptions: NextAuthOptions = {
         if (needsRefresh) {
           const dbUser = await prisma.user.findUnique({
             where: { id: token.id as string },
-            select: { subscriptionTier: true },
+            select: { subscriptionTier: true, onboardingCompleted: true },
           });
           if (dbUser) {
             token.subscriptionTier = dbUser.subscriptionTier;
+            token.onboardingCompleted = dbUser.onboardingCompleted;
           }
           token.tierLastRefreshed = Date.now();
         }
@@ -101,6 +112,7 @@ export const authOptions: NextAuthOptions = {
       if (token) {
         session.user.id = token.id as string;
         session.user.subscriptionTier = token.subscriptionTier as any;
+        session.user.onboardingCompleted = token.onboardingCompleted as boolean;
       }
       return session;
     },

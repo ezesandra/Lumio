@@ -161,3 +161,34 @@
 .actions button {
   border-radius: 0;
 }
+
+@media (max-width: 768px) {
+  .page {
+    padding: calc(60px + var(--spacing-4)) var(--spacing-4) var(--spacing-4);
+  }
+
+  .card {
+    padding: var(--spacing-5);
+  }
+
+  .title {
+    font-size: var(--font-size-md);
+  }
+
+  .description {
+    font-size: 0.8rem;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+  
+  .actions button {
+    width: 100%;
+  }
+
+  .actions > div {
+    width: 100%;
+    flex-direction: column-reverse;
+  }
+}
