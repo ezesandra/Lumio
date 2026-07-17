@@ -64,7 +64,7 @@ ${document.studyContent.summary}
 
 Answer the user's questions clearly, accurately, and concisely based on this context. Be encouraging and helpful.`
       },
-      ...pastMessages.map(m => ({ role: m.role, content: m.content }))
+      ...pastMessages.map((m: any) => ({ role: m.role, content: m.content }))
     ];
 
     // 4. Call AI API
