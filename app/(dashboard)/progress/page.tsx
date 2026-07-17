@@ -21,8 +21,9 @@ export default async function ProgressPage() {
     _count: true,
   });
 
+  const tierMap: Record<string, string> = { FREE: "Free", STANDARD: "Standard", PREMIUM: "Premium" };
   const tierLabel = user?.subscriptionTier
-    ? { FREE: "Free", STANDARD: "Standard", PREMIUM: "Premium" }[user.subscriptionTier]
+    ? tierMap[user.subscriptionTier as string] || "Free"
     : "Free";
 
   const stats = [
