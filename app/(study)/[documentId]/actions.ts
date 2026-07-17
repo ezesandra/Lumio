@@ -3,7 +3,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { awardXP } from "@/lib/gamification";
-import { XPAction } from "@prisma/client";
+type XPAction = "UPLOAD" | "QUIZ_COMPLETE" | "FLASHCARD_COMPLETE" | "DAILY_LOGIN" | "STREAK_7_DAY" | "STREAK_30_DAY";
 import { prisma } from "@/lib/prisma";
 import { LIMITS, type TierKey } from "@/lib/limits";
 
