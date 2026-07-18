@@ -28,7 +28,7 @@ export default function OnboardingPage() {
     setIsPending(true);
     await completeOnboardingAction();
     await update({ onboardingCompleted: true });
-    router.push("/upload");
+    router.push("/dashboard");
   }
 
   return (

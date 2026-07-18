@@ -86,6 +86,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.subscriptionTier = user.subscriptionTier;
         token.onboardingCompleted = (user as any).onboardingCompleted ?? false;
+        token.tierLastRefreshed = Date.now();
       }
 
       if (token.id) {
