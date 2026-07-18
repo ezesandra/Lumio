@@ -178,15 +178,12 @@ function SignupContent() {
         setError(result.error);
       } else if (result?.success) {
         const res = await signIn("credentials", {
-          email: formData.get("email"),
-          password: formData.get("password"),
+          email: formData.get("email") as string,
+          password: formData.get("password") as string,
           redirect: false,
         });
-        
         if (res?.ok) {
           router.push("/onboarding");
-        } else {
-          router.push("/login");
         }
       }
     });

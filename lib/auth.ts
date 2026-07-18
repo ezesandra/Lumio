@@ -90,20 +90,13 @@ export const authOptions: NextAuthOptions = {
       }
 
       if (token.id) {
-        const needsRefresh =
-          !token.tierLastRefreshed ||
-          Date.now() - (token.tierLastRefreshed as number) > 60 * 60 * 1000;
-          
-        if (needsRefresh) {
-          const dbUser = await prisma.user.findUnique({
-            where: { id: token.id as string },
-            select: { subscriptionTier: true, onboardingCompleted: true },
-          });
-          if (dbUser) {
-            token.subscriptionTier = dbUser.subscriptionTier;
-            token.onboardingCompleted = dbUser.onboardingCompleted;
-          }
-          token.tierLastRefreshed = Date.now();
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { subscriptionTier: true, onboardingCompleted: true },
+        });
+        if (dbUser) {
+          token.subscriptionTier = dbUser.subscriptionTier;
+          token.onboardingCompleted = dbUser.onboardingCompleted;
         }
       }
 

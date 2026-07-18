@@ -111,17 +111,14 @@ function LoginContent() {
     setLoading(true);
 
     const res = await signIn("credentials", {
-      redirect: false,
+      redirect: true,
+      callbackUrl: "/upload",
       email,
       password,
     });
-
-    if (res?.error) {
-      setError("Invalid email or password");
-      setLoading(false);
-    } else {
-      router.push("/upload");
-    }
+    
+    // Fallback in case redirect: true somehow returns without throwing
+    setLoading(false);
   };
 
   return (

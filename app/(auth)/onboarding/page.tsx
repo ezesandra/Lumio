@@ -37,7 +37,8 @@ export default function OnboardingPage() {
     setIsPending(true);
     await completeOnboardingAction();
     await update({ onboardingCompleted: true });
-    router.push("/upload");
+    await new Promise((r) => setTimeout(r, 500));
+    window.location.href = "/upload";
   }
 
   return (
