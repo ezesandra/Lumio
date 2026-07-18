@@ -164,6 +164,7 @@
   flex-direction: column;
   z-index: var(--z-sticky);
   transition: width var(--transition-normal);
+  overflow-y: auto;
 }
 
 .sidebarCollapsed {
@@ -237,6 +238,8 @@
 
 .sidebarNav {
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   padding: var(--spacing-3);
   display: flex;
   flex-direction: column;

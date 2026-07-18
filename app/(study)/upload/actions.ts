@@ -8,13 +8,22 @@ import { generateStudyContent } from "@/lib/ai";
 import { saveFile } from "@/lib/storage";
 import { extractText } from "@/lib/textract";
 import { z } from "zod";
+import { after } from "next/server";
 
 const testFormats = ["multiple-choice", "flashcard", "multiple-true-false", "oral", "essay"] as const;
+const studyOptions = ["summarize", "simplify", "ai-discussion", "key-concepts"] as const;
 
-const uploadSchema = z.object({
+const quizSchema = z.object({
   documentTitle: z.string().min(1, "Document title is required").max(200),
+  mode: z.literal("quiz"),
   testFormat: z.enum(testFormats, { error: "Please select a test format" }),
   questionCount: z.coerce.number().int().min(5).max(40),
+});
+
+const studySchema = z.object({
+  documentTitle: z.string().min(1, "Document title is required").max(200),
+  mode: z.literal("study"),
+  studyMadeEasy: z.enum(studyOptions, { error: "Please select a study option" }),
 });
 
 export async function uploadDocumentAction(formData: FormData) {
@@ -26,7 +35,14 @@ export async function uploadDocumentAction(formData: FormData) {
     if (!file) return { error: "File is required" };
 
     const data = Object.fromEntries(formData.entries());
-    const parsed = uploadSchema.safeParse(data);
+    const mode = data.mode;
+
+    let parsed;
+    if (mode === "study") {
+      parsed = studySchema.safeParse(data);
+    } else {
+      parsed = quizSchema.safeParse(data);
+    }
 
     if (!parsed.success) {
       return { error: parsed.error.issues[0].message };
@@ -39,7 +55,9 @@ export async function uploadDocumentAction(formData: FormData) {
       return { error: `File size exceeds the ${tier} tier limit of ${limits.maxFileSizeBytes / (1024 * 1024)}MB.` };
     }
 
-    if (parsed.data.questionCount > limits.questionsPerTest) {
+    const questionCount = parsed.data.mode === "quiz" ? parsed.data.questionCount : 10;
+
+    if (questionCount > limits.questionsPerTest) {
       return { error: `Your ${tier} tier is limited to ${limits.questionsPerTest} questions per test. Please upgrade for more.` };
     }
 
@@ -76,13 +94,19 @@ export async function uploadDocumentAction(formData: FormData) {
         fileHash,
         fileSize: file.size,
         documentTitle: parsed.data.documentTitle,
-        testFormat: parsed.data.testFormat,
-        questionCount: parsed.data.questionCount,
+        testFormat: parsed.data.mode === "quiz" ? parsed.data.testFormat : "multiple-choice",
+        questionCount,
         status: "PROCESSING",
       },
     });
 
-    generateStudyContent(document.id, text).catch(console.error);
+    after(async () => {
+      try {
+        await generateStudyContent(document.id, text);
+      } catch (error) {
+        console.error("[uploadDocumentAction] AI generation failed:", error);
+      }
+    });
 
     return { success: true, documentId: document.id };
   } catch (error) {
