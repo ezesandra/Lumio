@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { completeOnboardingAction } from "./actions";
@@ -22,13 +23,21 @@ export default function OnboardingPage() {
   const [step, setStep] = useState<Step>("welcome");
   const [isPending, setIsPending] = useState(false);
 
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.onboardingCompleted) {
+      router.push("/upload");
+    }
+  }, [session, status, router]);
+
   const currentIndex = steps.findIndex((s) => s.key === step);
 
   async function handleFinish() {
     setIsPending(true);
     await completeOnboardingAction();
     await update({ onboardingCompleted: true });
-    router.push("/dashboard");
+    router.push("/upload");
   }
 
   return (
@@ -170,7 +179,7 @@ export default function OnboardingPage() {
                   disabled={isPending}
   
                 >
-                  {isPending ? "Setting up..." : "Go to Dashboard"}
+                  {isPending ? "Setting up..." : "Start Studying"}
                 </Button>
               )}
             </div>

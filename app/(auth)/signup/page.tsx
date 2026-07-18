@@ -306,7 +306,7 @@ function SignupContent() {
         </div>
 
         <button
-          onClick={() => signIn("google", { callbackUrl: "/upload" })}
+          onClick={() => signIn("google", { callbackUrl: "/onboarding" })}
           onMouseEnter={() => setGoogleHover(true)}
           onMouseLeave={() => setGoogleHover(false)}
           style={{ ...googleBtnStyle, background: googleHover ? "#f5f5f5" : "#fff" }}
