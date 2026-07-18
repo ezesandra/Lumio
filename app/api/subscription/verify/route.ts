@@ -70,7 +70,7 @@ export async function POST(req: Request) {
     }
 
     // Create Subscription record and update User tier
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: any) => {
       // Cancel any existing active subscriptions for this user
       await tx.subscription.updateMany({
         where: { userId, status: "ACTIVE" },
